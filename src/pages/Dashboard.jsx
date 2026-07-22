@@ -6,15 +6,29 @@ import { MdAir } from "react-icons/md";
 import { FaWind } from "react-icons/fa";
 import { FaTemperatureHigh } from "react-icons/fa";
 import { WiHumidity } from "react-icons/wi";
+import { useEffect, useState } from "react";
+import { getAQIData } from "../services/aqiService";
+
 
 
 function Dashboard() {
     const hour = new Date().getHours();
 
+    const [aqiData, setAQIData] = useState([]);
+
   let greeting = "Good Morning";
 
   if (hour >= 12 && hour < 17) greeting = "Good Afternoon";
   if (hour >= 17) greeting = "Good Evening";
+
+  useEffect(() => {
+    const fetchData = async () => {
+        const data = await getAQIData();
+        setAQIData(data);
+    };
+
+    fetchData();
+}, []);
 
   return (
     <div className="min-h-screen bg-slate-900 text-white">
@@ -25,8 +39,8 @@ function Dashboard() {
         {/* Welcome Section */}
         <div className="mb-10">
          <h1 className="text-5xl font-bold">
-   {greeting},
-  <span className="text-green-400"> Anushka</span>
+   {greeting}
+  <span className="text-green-400"> </span>
 </h1>
 
           <p className="mt-3 text-lg text-gray-400">
@@ -39,7 +53,7 @@ function Dashboard() {
 
           <AQICard
   title="Air Quality Index"
-  value="185"
+  value={aqiData[0]?.aqi}
   unit="Moderate"
   color="text-yellow-400"
   icon={<MdAir />}
@@ -47,7 +61,7 @@ function Dashboard() {
 
 <AQICard
   title="PM2.5"
-  value="92"
+  value={aqiData[0]?.pm25}
   unit="µg/m³"
   color="text-red-400"
   icon={<FaWind />}
@@ -55,7 +69,7 @@ function Dashboard() {
 
 <AQICard
   title="PM10"
-  value="120"
+  value={aqiData[0]?.pm10}
   unit="µg/m³"
   color="text-orange-400"
   icon={<FaWind />}
@@ -63,7 +77,7 @@ function Dashboard() {
 
 <AQICard
   title="Temperature"
-  value="32°C"
+  value={aqiData[0]?.temperature}
   unit="Current"
   color="text-cyan-400"
   icon={<FaTemperatureHigh />}
@@ -71,7 +85,7 @@ function Dashboard() {
 
 <AQICard
   title="Humidity"
-  value="68%"
+  value={aqiData[0]?.humidity}
   unit="Current"
   color="text-green-400"
   icon={<WiHumidity />}
